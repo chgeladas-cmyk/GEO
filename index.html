@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Carimbo Digital</title>
-    <link rel="manifest" href="manifest.json">
-    <script src="https://cdn.tailwindcss.com"></script>
+        <script src="https://cdn.tailwindcss.com"></script>
     <!-- Bibliotecas para Print e Excel -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -172,7 +171,12 @@
 
             <!-- Material Gasto -->
             <div class="card">
-                <h2 class="font-bold border-b mb-3 pb-1 text-red-700 uppercase text-sm tracking-wider">Material Gasto</h2>
+                <h2 class="font-bold border-b mb-3 pb-1 text-red-700 uppercase text-sm tracking-wider flex items-center justify-between">
+                    <span>Material Gasto</span>
+                    <button onclick="openMaisUsados()" class="no-screenshot bg-red-50 text-red-700 border border-red-200 rounded-full px-3 py-1 text-xs font-bold hover:bg-red-100 transition flex items-center gap-1">
+                        ⚡ Mais Usados
+                    </button>
+                </h2>
                 <div id="materiais-list" class="space-y-2 mb-3"></div>
                 <div class="mt-4 flex gap-2 no-screenshot">
                     <input type="text" id="new-material" placeholder="Novo material..." class="flex-1">
@@ -185,6 +189,27 @@
         <footer class="text-center text-gray-400 text-sm mt-8 pb-10">
             Equipe L - Carimbo Digital
         </footer>
+    </div>
+
+    <!-- Modal Mais Usados -->
+    <div id="mais-usados-modal" class="fixed inset-0 bg-black bg-opacity-60 hidden z-50 flex items-end justify-center p-0">
+        <div class="bg-white w-full max-w-lg rounded-t-2xl shadow-2xl flex flex-col" style="max-height:85vh">
+            <div class="flex items-center justify-between px-4 pt-4 pb-2 border-b">
+                <h3 class="font-bold text-red-700 text-base uppercase tracking-wide">⚡ Materiais Mais Usados</h3>
+                <button onclick="closeMaisUsados()" class="text-gray-400 hover:text-black p-1 rounded-full">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div class="px-4 pt-3 pb-2">
+                <div class="flex flex-wrap gap-2" id="mais-usados-chips"></div>
+            </div>
+            <div class="px-4 pb-2">
+                <hr class="mb-2">
+                <p class="text-xs text-gray-400 mb-1">Selecione na lista completa:</p>
+                <input type="text" id="mais-usados-busca" oninput="filtrarModalMateriais()" placeholder="Buscar material..." class="w-full text-sm py-2 px-3 border rounded-lg mb-2">
+            </div>
+            <div id="mais-usados-lista" class="overflow-y-auto flex-1 px-4 pb-4 space-y-1"></div>
+        </div>
     </div>
 
     <!-- Modal Screenshot -->
@@ -201,9 +226,11 @@
     </div>
 
     <script>
-        // Registrar Service Worker
+        // Service Worker desativado (sem sw.js no repo)
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js').catch(() => console.log("SW offline"));
+            navigator.serviceWorker.getRegistrations().then(regs => {
+                regs.forEach(r => r.unregister());
+            });
         }
 
         // Dados Padrão de Persistência
@@ -342,7 +369,72 @@
                 "Lançamento de cordoalha", "Encabeçamento e retencionamento", "Espinamento da rede"
             ],
             materials: [
-                "Alças", "Metros de cordoalha", "Metros de cabo", "Rolo de fio espinar"
+                "22025704- CONECTOR ATERRAMENTO 16MM",
+                "22025759- PLACA SINALIZ 90X40X3MM COAX",
+                "22025810- CONJ.ISOLADOR ANCORAGEM",
+                "22025937- ISOLADOR PORCELANA 72 X 72",
+                "22025963- CONEC_RE P/HASTE 5/8\"",
+                "ACRE1505- ELETRODUTO RIGIDO 1/2 X 3MT PT",
+                "30030837- AMP 1G/42MHZ BLE100K-HXXH-F-R",
+                "30030839- AMP 1G/42MHZ MB100K 2 SAIDAS",
+                "30030948- AMP 1G/42MHZ MB100K 3 SAIDAS",
+                "30033093- CONEC_RE ADAPT.EQPT/EQPT",
+                "30033096- CONEC_RE .750 3 PC PINO LONGO",
+                "30033099- CONEC_RE .500 PINO LONGO",
+                "30033100- CONEC_RE ADAPT 180 GP-PA-4.5-T",
+                "30033185- CONEC_RE TERM. CORPO LONGO GI",
+                "60000132- CABO COAXIAL RE P3 .750 S/M PT",
+                "60000133- CABO COAXIAL RE P3 .500 S/M PT",
+                "30033422- SUPORTE FIXACAO FOSC100BM",
+                "30033451- CONJUNTO TUBO DERIVACAO FOSC (22066730)",
+                "30033565- FIBERLOOP DE NYLON G 66",
+                "30034875- TAP 04S 10DB 1GHZ FFT4-10P-R",
+                "30034843- TAP 08S 20DB 1GHZ FFT8-20P-R",
+                "30034192- GABIN FONTE 127V SEM",
+                "30034551- TAP 02S 23DB 1GHZ FFT2-23P-R",
+                "30034553- TAP 04S 20DB 1GHZ FFT4-20P-R",
+                "30034554- TAP 04S 17DB 1GHZ FFT4-17P-R",
+                "30034556- TAP 02S 04DB 1GHZ FFT2-4-TP-R",
+                "30034575- TAP 02S 10DB 1GHZ FFT2-10P-R",
+                "30034557- TAP 02S 20DB 1GHZ FFT2-20P-R",
+                "PARE0828- TAP 08S 10DB 1GHZ FFT8-10TP-R",
+                "30034558- TAP 02S 17DB 1GHZ FFT2-17P-R",
+                "30034562- TAP 04S 14DB 1GHZ FFT4-14P-R",
+                "60000180- CABO FO CFOA-SM-DD-G-096 RC",
+                "ACRE1144- ELETRODUTO FLEX SEALTURO 3/4\"",
+                "30034584- TAP 08S 14DB 1GHZ FFT8-14P-R",
+                "90001510- REFIL P/MACARICO PORTATIL ARJ 252341",
+                "90002026- KIT TRV PS ALPHA V5 C/CAM 3X1",
+                "30034583- TAP 08S 17DB 1GHZ FFT8-17P-R",
+                "30034398- INSERSOR POTENCIA SSP-PIN/SP-R",
+                "PARE0751- DIV_RE 3S 1GHZ SSP-3-636N-R",
+                "30034581- TAP 08S 23DB 1GHZ FFT8-23P-R",
+                "30034508- DC_RE 07DB 1GHZ SSP-7N-R",
+                "30034509- DC_RE 12DB 1GHZ SSP-12N-R",
+                "PARE0845- TAP 04S 07DB 1GHZ FFT4-7TP-R",
+                "PARE0760- DIV_RE 2S 1GHZ SSP-2N-R",
+                "30034306- EMENDA PRE FORMADO 3/16 POL",
+                "60000182- CABO FO CFOA-SM-DD-G-48 RC",
+                "PARE1500- TAP 02 S 04 DB 1.2 GHZ FFT2-04TQ",
+                "30034977- TAP 02 S 07 DB 1.2 GHZ FFT2-07QARRIS",
+                "30035004- DIV_RE 02S 1.2 GHZ SSP-3Q",
+                "22021502- CABO FO CFOA-SM-DD-G-036 RC",
+                "22025072- FITA ISOLANTE 3M 33+",
+                "22056332- FITA AUTO-FUSAO 23LB 19X10MM 3M NET",
+                "22056335- FECHO DE ACO INOX DENTADO 3/4",
+                "30034275- PARAFUSO P/ABRAC BAP 2 E 3",
+                "30034505- DIV_RE 3S 1GHZ SSP-3-636N-R",
+                "22025537- FIO RIGIDO 6MM PRETO 750V",
+                "22025538- FIO RIGIDO 6MM AZUL 750V",
+                "22025592- ISOLADOR_RE HORIZ. 12X817CM",
+                "ACRE0367- PROTETOR TERMOCONTR.500 A .625",
+                "22025669- HASTE ATER SAE1020 16MM 2,4M",
+                "22055824- FITA INOX 3/4 X 0,5MM X 25M",
+                "22055836- FITA AUTOFUSAO 3M 23LB 19X10MM",
+                "22055839- FECHO DE ACO INOX DENTADO 3/4",
+                "22025593- SUPORTE P/ISOLADOR_RE VERT.",
+                "22025932- FIO ESPIN SAE1020 ISOL FEI-125",
+                "30033094- CONEC_RE ADAPT 90 GL-90-SC-3T"
             ]
         };
 
@@ -350,7 +442,7 @@
 
         // Atualiza a lista de atividades quando uma nova versão é lançada,
         // mesclando os itens padrão novos com os itens já salvos pelo usuário
-        const DATA_VERSION = 3;
+        const DATA_VERSION = 4;
         const savedVersion = parseInt(localStorage.getItem('carimbo_data_version') || '1', 10);
         if (savedVersion < DATA_VERSION) {
             const merged = [...defaultData.activities];
@@ -358,6 +450,12 @@
                 if (!merged.includes(item)) merged.push(item);
             });
             dataStore.activities = merged;
+            // Merge novos materiais mantendo os do usuário
+            const mergedMat = [...defaultData.materials];
+            (dataStore.materials || []).forEach(item => {
+                if (!mergedMat.includes(item)) mergedMat.push(item);
+            });
+            dataStore.materials = mergedMat;
             if (!dataStore.activityDetails) dataStore.activityDetails = {};
             localStorage.setItem('carimbo_data_version', String(DATA_VERSION));
             saveData();
@@ -479,7 +577,133 @@
             renderList(type);
         }
 
-        // Função de Geolocalização Atualizada
+        // ========== MAIS USADOS - SELEÇÃO RÁPIDA ==========
+        const MAIS_USADOS = [
+            "22025072- FITA ISOLANTE 3M 33+",
+            "22056332- FITA AUTO-FUSAO 23LB 19X10MM 3M NET",
+            "22056335- FECHO DE ACO INOX DENTADO 3/4",
+            "22055824- FITA INOX 3/4 X 0,5MM X 25M",
+            "30034556- TAP 02S 04DB 1GHZ FFT2-4-TP-R",
+            "30034557- TAP 02S 20DB 1GHZ FFT2-20P-R",
+            "30034575- TAP 02S 10DB 1GHZ FFT2-10P-R",
+            "30034553- TAP 04S 20DB 1GHZ FFT4-20P-R",
+            "30034505- DIV_RE 3S 1GHZ SSP-3-636N-R",
+            "30034508- DC_RE 07DB 1GHZ SSP-7N-R",
+            "30034509- DC_RE 12DB 1GHZ SSP-12N-R",
+            "60000132- CABO COAXIAL RE P3 .750 S/M PT",
+            "60000133- CABO COAXIAL RE P3 .500 S/M PT",
+            "22025704- CONECTOR ATERRAMENTO 16MM",
+            "22025669- HASTE ATER SAE1020 16MM 2,4M",
+            "30033093- CONEC_RE ADAPT.EQPT/EQPT",
+            "30033096- CONEC_RE .750 3 PC PINO LONGO",
+            "30033099- CONEC_RE .500 PINO LONGO",
+            "30034275- PARAFUSO P/ABRAC BAP 2 E 3",
+            "ACRE0367- PROTETOR TERMOCONTR.500 A .625"
+        ];
+
+        function openMaisUsados() {
+            document.getElementById('mais-usados-modal').classList.remove('hidden');
+            document.getElementById('mais-usados-busca').value = '';
+            renderMaisUsadosChips();
+            filtrarModalMateriais();
+        }
+
+        function closeMaisUsados() {
+            document.getElementById('mais-usados-modal').classList.add('hidden');
+        }
+
+        function renderMaisUsadosChips() {
+            const container = document.getElementById('mais-usados-chips');
+            container.innerHTML = '';
+            MAIS_USADOS.forEach(mat => {
+                const btn = document.createElement('button');
+                // Nome curto: pega parte após "- " ou trunca
+                const label = mat.replace(/^\S+- /, '').substring(0, 22) + (mat.replace(/^\S+- /, '').length > 22 ? '…' : '');
+                const alreadyIn = dataStore.materials.includes(mat);
+                btn.className = `text-xs px-2 py-1 rounded-full border font-medium transition ${alreadyIn ? 'bg-red-100 text-red-700 border-red-300' : 'bg-gray-100 text-gray-700 border-gray-300 hover:bg-red-50 hover:border-red-300 hover:text-red-700'}`;
+                btn.textContent = (alreadyIn ? '✓ ' : '+ ') + label;
+                btn.title = mat;
+                btn.onclick = () => { addMaterialFromModal(mat); renderMaisUsadosChips(); filtrarModalMateriais(); };
+                container.appendChild(btn);
+            });
+        }
+
+        function filtrarModalMateriais() {
+            const termo = (document.getElementById('mais-usados-busca').value || '').toLowerCase();
+            const lista = document.getElementById('mais-usados-lista');
+            lista.innerHTML = '';
+            dataStore.materials.filter(m => !termo || m.toLowerCase().includes(termo)).forEach(mat => {
+                const div = document.createElement('div');
+                div.className = 'flex items-center gap-2 py-1 border-b border-gray-100 last:border-0';
+                const span = document.createElement('span');
+                span.className = 'text-xs text-gray-700 flex-1';
+                span.textContent = mat;
+                const btn = document.createElement('button');
+                btn.className = 'text-xs px-2 py-1 rounded border font-bold transition bg-red-50 text-red-700 border-red-200 hover:bg-red-100';
+                btn.textContent = 'Selecionar';
+                btn.dataset.mat = mat;
+                btn.addEventListener('click', function() { marcarMaterialModal(this.dataset.mat, this); });
+                div.appendChild(span);
+                div.appendChild(btn);
+                lista.appendChild(div);
+            });
+            if (termo) {
+                MAIS_USADOS.filter(m => !dataStore.materials.includes(m) && m.toLowerCase().includes(termo)).forEach(mat => {
+                    const div = document.createElement('div');
+                    div.className = 'flex items-center gap-2 py-1 border-b border-gray-100 last:border-0';
+                    const span = document.createElement('span');
+                    span.className = 'text-xs text-gray-400 flex-1 italic';
+                    span.textContent = mat + ' (add)';
+                    const btn = document.createElement('button');
+                    btn.className = 'text-xs px-2 py-1 rounded border font-bold transition bg-green-50 text-green-700 border-green-200 hover:bg-green-100';
+                    btn.textContent = '+ Add';
+                    btn.dataset.mat = mat;
+                    btn.addEventListener('click', function() {
+                        addMaterialFromModal(this.dataset.mat);
+                        filtrarModalMateriais();
+                        renderMaisUsadosChips();
+                    });
+                    div.appendChild(span);
+                    div.appendChild(btn);
+                    lista.appendChild(div);
+                });
+            }
+        }
+
+        function addMaterialFromModal(mat) {
+            if (!dataStore.materials.includes(mat)) {
+                dataStore.materials.push(mat);
+                saveData();
+                renderList('material');
+                showToast('Material adicionado!');
+            }
+        }
+
+        function marcarMaterialModal(mat, btn) {
+            // Marca o checkbox do material na lista principal
+            const checkboxes = document.querySelectorAll('.material-checkbox');
+            let found = false;
+            checkboxes.forEach(cb => {
+                if (cb.dataset.name === mat) {
+                    cb.checked = true;
+                    found = true;
+                    const qtyEl = document.getElementById(`qty-material-${cb.id.replace('material-', '')}`);
+                    if (qtyEl && !qtyEl.value) qtyEl.value = '1';
+                }
+            });
+            if (found) {
+                btn.textContent = '✓';
+                btn.classList.replace('bg-red-50', 'bg-green-100');
+                btn.classList.replace('text-red-700', 'text-green-700');
+                showToast('Marcado: ' + mat.replace(/^\S+- /, '').substring(0, 30));
+            } else {
+                showToast('Material não encontrado na lista principal');
+            }
+        }
+
+        // ========== FIM MAIS USADOS ==========
+
+
         async function getGeolocalizacao() {
             if (!navigator.geolocation) {
                 showToast("GPS não suportado pelo navegador.");
@@ -870,6 +1094,11 @@
         renderList('activity');
         renderList('material');
         setupActiveFieldTracking();
+
+        // Fechar modal mais-usados ao clicar no fundo (DOM já existe aqui)
+        document.getElementById('mais-usados-modal').addEventListener('click', function(e) {
+            if (e.target === this) closeMaisUsados();
+        });
     </script>
 </body>
 </html>
