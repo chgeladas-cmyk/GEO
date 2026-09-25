@@ -1,0 +1,56 @@
+input, textarea, select {
+            border: 1px solid #e2e8f0;
+            border-radius: 0.375rem;
+            padding: 0.5rem;
+            width: 100%;
+            background-color: #fff;
+        }
+        .card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 1rem;
+        }
+        #toast {
+            visibility: hidden;
+            min-width: 200px;
+            margin-left: -100px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 8px;
+            padding: 16px;
+            position: fixed;
+            z-index: 100;
+            left: 50%;
+            bottom: 30px;
+        }
+        #toast.show {
+            visibility: visible;
+            animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        }
+        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
+        @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+        
+        .delete-btn {
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .item-row:hover .delete-btn {
+            opacity: 1;
+        }
+        @media (max-width: 768px) {
+            .delete-btn { opacity: 1; }
+        }
+
+        .printing-mode input, .printing-mode textarea {
+            border: none !important;
+            padding-left: 0 !important;
+            font-weight: bold;
+            color: #1a202c;
+        }
+        .voice-target {
+            outline: 3px solid #16a34a !important;
+            box-shadow: 0 0 0 3px rgba(22,163,74,0.2) !important;
+        }

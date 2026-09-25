@@ -1,0 +1,13 @@
+{
+  "name": "GEO",
+  "short_name": "GEO",
+  "description": "Aplicação GEO para registro de atividades e materiais.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "lang": "pt-BR",
+  "theme_color": "#111827",
+  "background_color": "#ffffff",
+  "icons": []
+}
