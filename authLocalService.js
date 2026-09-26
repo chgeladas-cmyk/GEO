@@ -1,7 +1,7 @@
 const STORAGE_USERS = "geo_auth_users_v1";
 const STORAGE_SESSION = "geo_auth_session_v1";
 const STORAGE_VERSION = "geo_auth_version_v1";
-const VERSION = 3; // v3: adiciona usuários padrão supervisor/tecnico (senha 1234)
+const VERSION = 4; // v4: usr_tecnico agora é conta "shared" (universal de primeiro acesso)
 
 const PROFILE_PERMISSIONS = Object.freeze({
     ADMIN: ["atividades","materiais","ordens","relatorios","usuarios","configuracoes"],
@@ -22,6 +22,12 @@ function normalizeUser(user) {
         active: user.active !== false,
         permissions: Array.isArray(user.permissions) ? [...new Set(user.permissions)] : [],
         passwordHash: String(user.passwordHash ?? ""),
+        // Conta universal de primeiro acesso (ex.: "tecnico" padrão). Uma conta shared
+        // pode criar seu próprio usuário pessoal via claimPersonalAccount(), sem precisar de ADMIN.
+        shared: Boolean(user.shared),
+        // Marcado pelo ADMIN via resetUserPassword(): a senha foi resetada para o padrão (1234)
+        // e o próprio usuário precisa definir uma nova senha via setOwnPassword() no próximo acesso.
+        needsPasswordReset: Boolean(user.needsPasswordReset),
         createdAt: user.createdAt || new Date().toISOString(),
         updatedAt: user.updatedAt || new Date().toISOString()
     };
@@ -142,7 +148,9 @@ export function getCurrentUser() {
         username: user.username,
         name: user.name,
         profile: user.profile,
-        permissions: user.permissions
+        permissions: user.permissions,
+        shared: user.shared,
+        needsPasswordReset: user.needsPasswordReset
     };
 }
 
@@ -193,6 +201,42 @@ export async function createUser({ username, name, password, profile = "TECNICO"
     });
     users.push(user);
     saveUsers(users);
+    return user;
+}
+
+// Permite que quem entrou com uma conta "shared" (ex.: tecnico/1234 universal)
+// crie seu próprio usuário local, com o mesmo perfil/permissões da conta shared,
+// e já faz login automático nesse novo usuário. Não exige ADMIN.
+export async function claimPersonalAccount({ username, name, password }) {
+    const current = getCurrentUser();
+    if (!current || !current.shared) {
+        throw new Error("Essa ação só está disponível ao entrar com um acesso universal (ex.: técnico padrão).");
+    }
+
+    const normalized = normalizeUsername(username);
+    if (!normalized || !String(name ?? "").trim() || String(password ?? "").length < 4) {
+        throw new Error("Usuário, nome e senha são obrigatórios. A senha deve ter pelo menos 4 caracteres.");
+    }
+
+    const users = getUsers();
+    if (users.some(u => u.username === normalized)) throw new Error("Este usuário já existe.");
+
+    const now = new Date().toISOString();
+    const user = normalizeUser({
+        id: `usr_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+        username: normalized,
+        name,
+        profile: current.profile,
+        active: true,
+        permissions: current.permissions,
+        passwordHash: await hashPassword(password),
+        shared: false,
+        createdAt: now,
+        updatedAt: now
+    });
+    users.push(user);
+    saveUsers(users);
+    setSession(user);
     return user;
 }
 
@@ -250,6 +294,44 @@ export async function setUserPassword(id, password) {
     users[index].updatedAt = new Date().toISOString();
     saveUsers(users);
     return true;
+}
+
+// ADMIN reseta a senha de um usuário para o padrão (1234), sem definir a senha final —
+// o próprio usuário define a senha nova via setOwnPassword() no próximo acesso.
+export async function resetUserPassword(id) {
+    const current = getCurrentUser();
+    if (!current || current.profile !== "ADMIN") throw new Error("Apenas ADMIN pode resetar senha.");
+
+    const users = getUsers();
+    const index = users.findIndex(u => u.id === id);
+    if (index < 0) throw new Error("Usuário não encontrado.");
+    if (users[index].shared) throw new Error("Essa conta já é um acesso padrão (1234); não precisa de reset.");
+
+    users[index].passwordHash = await hashPassword("1234");
+    users[index].needsPasswordReset = true;
+    users[index].updatedAt = new Date().toISOString();
+    saveUsers(users);
+    return true;
+}
+
+// Usuário com needsPasswordReset define sua própria senha nova, sem precisar de ADMIN.
+export async function setOwnPassword(password) {
+    const current = getCurrentUser();
+    if (!current || !current.needsPasswordReset) {
+        throw new Error("Não há redefinição de senha pendente para este usuário.");
+    }
+    if (String(password ?? "").length < 4) throw new Error("A senha deve ter pelo menos 4 caracteres.");
+
+    const users = getUsers();
+    const index = users.findIndex(u => u.id === current.id);
+    if (index < 0) throw new Error("Usuário não encontrado.");
+
+    users[index].passwordHash = await hashPassword(password);
+    users[index].needsPasswordReset = false;
+    users[index].updatedAt = new Date().toISOString();
+    saveUsers(users);
+    setSession(users[index]);
+    return users[index];
 }
 
 export { getUsers, hashPassword, PROFILE_PERMISSIONS };

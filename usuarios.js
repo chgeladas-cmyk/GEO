@@ -31,6 +31,9 @@ window.GEO_DEFAULT_USERS = [
         active: true,
         permissions: ["atividades","materiais"],
         passwordHash: "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
+        // Conta universal de primeiro acesso: ao logar com ela, o app pede
+        // para o técnico criar seu próprio usuário local (ver "shared" em authLocalService.js).
+        shared: true,
         createdAt: "2026-09-26T00:00:00.000Z",
         updatedAt: "2026-09-26T00:00:00.000Z"
     }

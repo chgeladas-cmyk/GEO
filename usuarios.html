@@ -58,7 +58,7 @@
 <script src="./usuarios.js"></script>
 <script type="module">
 import { initAuthUI } from "./auth-guard.js";
-import { getUsers, createUser, updateUser, setUserPassword, getProfilePermissions } from "./authLocalService.js";
+import { getUsers, createUser, updateUser, setUserPassword, resetUserPassword, getProfilePermissions } from "./authLocalService.js";
 import { state } from "./state.js";
 import { saveData } from "./storage.js";
 
@@ -88,7 +88,7 @@ function render() {
       <td class="p-2"><span class="${u.active ? "text-green-700":"text-red-700"} font-semibold">${u.active ? "ATIVO":"BLOQUEADO"}</span></td>
       <td class="p-2 text-right whitespace-nowrap">
         <button class="edit border px-2 py-1 rounded mr-1" data-id="${u.id}">Editar</button>
-        <button class="reset bg-amber-500 text-white px-2 py-1 rounded" data-id="${u.id}">Trocar senha</button>
+        ${u.shared ? "" : `<button class="reset bg-amber-500 text-white px-2 py-1 rounded" data-id="${u.id}">Resetar senha</button>`}
       </td>
     </tr>`).join("");
 }
@@ -126,7 +126,11 @@ form.onsubmit=async e=>{
 document.addEventListener("click", e=>{
  const edit=e.target.closest(".edit"), reset=e.target.closest(".reset");
  if(edit){ const u=getUsers().find(x=>x.id===edit.dataset.id); if(u) openEdit(u); }
- if(reset){ const u=getUsers().find(x=>x.id===reset.dataset.id); if(!u) return; const p=prompt(`Nova senha para ${u.username}:`); if(p===null)return; setUserPassword(u.id,p).then(render).catch(err=>alert(err.message)); }
+ if(reset){
+   const u=getUsers().find(x=>x.id===reset.dataset.id); if(!u) return;
+   if(!confirm(`Resetar a senha de ${u.username} para o padrão (1234)? Ele(a) vai precisar definir uma senha própria no próximo acesso.`)) return;
+   resetUserPassword(u.id).then(()=>{ render(); alert("Senha resetada para 1234. Avise o usuário — ele vai definir a senha nova ao entrar."); }).catch(err=>alert(err.message));
+ }
 });
 
 function exportarListas() {
