@@ -1,4 +1,4 @@
-const CACHE_VERSION = "geo-v15-esqueci-senha";
+const CACHE_VERSION = "geo-v17-admin-sem-senha-de-fabrica";
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 

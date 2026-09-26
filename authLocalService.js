@@ -1,7 +1,7 @@
 const STORAGE_USERS = "geo_auth_users_v1";
 const STORAGE_SESSION = "geo_auth_session_v1";
 const STORAGE_VERSION = "geo_auth_version_v1";
-const VERSION = 4; // v4: usr_tecnico agora é conta "shared" (universal de primeiro acesso)
+const VERSION = 5; // v5: ADMIN sem senha de fábrica (precisa ser configurada no aparelho); ensureInitialized virou merge não-destrutivo
 
 const PROFILE_PERMISSIONS = Object.freeze({
     ADMIN: ["atividades","materiais","ordens","relatorios","usuarios","configuracoes"],
@@ -51,8 +51,23 @@ function getDefaultUsers() {
 }
 
 function ensureInitialized() {
-    if (localStorage.getItem(STORAGE_VERSION) !== String(VERSION) || !Array.isArray(read(STORAGE_USERS))) {
+    const storedVersion = localStorage.getItem(STORAGE_VERSION);
+    const existing = read(STORAGE_USERS);
+    if (!Array.isArray(existing)) {
         write(STORAGE_USERS, getDefaultUsers());
+        localStorage.setItem(STORAGE_VERSION, String(VERSION));
+        return;
+    }
+    if (storedVersion !== String(VERSION)) {
+        // Upgrade não-destrutivo: só ADICIONA usuários padrão novos que ainda não existem
+        // neste aparelho (por username). Nunca sobrescreve um usuário já existente — isso
+        // preservaria, por exemplo, uma senha de ADMIN que já foi configurada localmente.
+        const existingUsernames = new Set(existing.map(u => normalizeUsername(u.username)));
+        const merged = [...existing];
+        getDefaultUsers().forEach(defUser => {
+            if (!existingUsernames.has(defUser.username)) merged.push(defUser);
+        });
+        write(STORAGE_USERS, merged);
         localStorage.setItem(STORAGE_VERSION, String(VERSION));
     }
 }
@@ -116,6 +131,32 @@ async function hashPassword(password) {
     return [h0,h1,h2,h3,h4,h5,h6,h7].map(x=>x.toString(16).padStart(8,"0")).join("");
 }
 
+// O usuário admin de fábrica não tem senha (passwordHash vazio) — login fica bloqueado
+// até alguém definir a senha real dele neste aparelho. Não exige estar logado: só checa
+// se ainda não foi configurada (needsPasswordReset), então a senha de fábrica nunca
+// existe de fato — ninguém precisa conhecê-la nem ela aparece em código ou mensagens.
+export function isAdminSetupPending() {
+    const users = getUsers();
+    const admin = users.find(u => u.id === "usr_admin");
+    return Boolean(admin && admin.needsPasswordReset);
+}
+
+export async function setupAdminPassword(password) {
+    const users = getUsers();
+    const index = users.findIndex(u => u.id === "usr_admin");
+    if (index < 0) throw new Error("Usuário admin não encontrado.");
+    if (!users[index].needsPasswordReset) {
+        throw new Error("A senha do Administrador já foi definida neste aparelho.");
+    }
+    if (String(password ?? "").length < 4) throw new Error("A senha deve ter pelo menos 4 caracteres.");
+
+    users[index].passwordHash = await hashPassword(password);
+    users[index].needsPasswordReset = false;
+    users[index].updatedAt = new Date().toISOString();
+    saveUsers(users);
+    return true;
+}
+
 export async function authenticate(username, password) {
     ensureInitialized();
     const normalized = normalizeUsername(username);
@@ -163,6 +204,13 @@ export function requireAuth({ permission = null, redirect = "./login.html" } = {
     const user = getCurrentUser();
     if (!user) {
         location.replace(redirect);
+        return null;
+    }
+    const isIndexPage = /(^|\/)index\.html$/.test(location.pathname) || location.pathname.endsWith("/");
+    if (user.needsPasswordReset && !isIndexPage) {
+        // Força voltar para a tela que pede a senha nova, mesmo se a pessoa
+        // tentar acessar outra página diretamente pela URL.
+        location.replace("./index.html");
         return null;
     }
     if (permission && !hasPermission(permission)) {

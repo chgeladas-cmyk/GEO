@@ -1,5 +1,8 @@
-// Usuários iniciais do GEO. Senha inicial: ADMIN=270889, SUPERVISOR/TECNICO=1234.
-// Após o primeiro acesso, cada usuário deve trocar a própria senha em "Usuários".
+// Usuários iniciais do GEO. Nenhuma senha de fábrica fica registrada aqui:
+// SUPERVISOR/TECNICO usam o acesso universal (senha 1234, ver "shared" abaixo);
+// ADMIN não tem senha nenhuma até ser configurado no próprio aparelho (ver login.html:
+// "Definir senha do Administrador"). Depois do primeiro acesso, cada perfil troca a
+// própria senha em "Usuários".
 window.GEO_DEFAULT_USERS = [
     {
         id: "usr_admin",
@@ -8,7 +11,10 @@ window.GEO_DEFAULT_USERS = [
         profile: "ADMIN",
         active: true,
         permissions: ["atividades","materiais","ordens","relatorios","usuarios","configuracoes"],
-        passwordHash: "4e8400615009fcddc7f646c80170b24a475b3b85dfeb04cb27654b458d44c4fe",
+        // Sem hash — login fica bloqueado até alguém definir a senha pela primeira vez
+        // neste aparelho (setupAdminPassword em authLocalService.js).
+        passwordHash: "",
+        needsPasswordReset: true,
         createdAt: "2026-09-26T00:00:00.000Z",
         updatedAt: "2026-09-26T00:00:00.000Z"
     },

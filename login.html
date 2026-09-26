@@ -30,11 +30,47 @@
     <p class="text-xs text-gray-400 text-center mt-6">Acesso local neste dispositivo.</p>
     <p class="text-center mt-2"><button id="forgot-password" type="button" class="text-xs text-blue-600 underline">Esqueci minha senha</button></p>
   </section>
+
+  <section id="admin-setup" class="card shadow-lg mt-4 hidden">
+    <h2 class="text-sm font-bold text-gray-700 mb-1">Primeiro acesso — Administrador</h2>
+    <p class="text-xs text-gray-500 mb-3">Este aparelho ainda não tem senha de Administrador definida. Escolha uma agora (só quem for administrar o GEO precisa fazer isso).</p>
+    <form id="admin-setup-form" class="space-y-3">
+      <div><label class="block text-sm font-semibold text-gray-600">NOVA SENHA DO ADMIN</label><input id="admin-setup-password" type="password" minlength="4" required class="w-full"></div>
+      <div><label class="block text-sm font-semibold text-gray-600">CONFIRMAR SENHA</label><input id="admin-setup-password-confirm" type="password" minlength="4" required class="w-full"></div>
+      <div id="admin-setup-error" class="hidden text-sm text-red-600 bg-red-50 border border-red-200 rounded p-3"></div>
+      <button class="w-full bg-gray-800 text-white font-bold py-2 rounded-lg">Definir senha do Administrador</button>
+    </form>
+  </section>
 </main>
 <script src="./usuarios.js"></script>
 <script type="module">
-import { authenticate, getCurrentUser, resetLocalAuthToDefault } from "./authLocalService.js";
+import { authenticate, getCurrentUser, resetLocalAuthToDefault, isAdminSetupPending, setupAdminPassword } from "./authLocalService.js";
 if (getCurrentUser()) location.replace("./index.html");
+
+if (isAdminSetupPending()) {
+  document.getElementById("admin-setup").classList.remove("hidden");
+}
+
+document.getElementById("admin-setup-form").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const errorEl = document.getElementById("admin-setup-error");
+  errorEl.classList.add("hidden");
+  const pw = document.getElementById("admin-setup-password").value;
+  const pw2 = document.getElementById("admin-setup-password-confirm").value;
+  if (pw !== pw2) {
+    errorEl.textContent = "As senhas não coincidem.";
+    errorEl.classList.remove("hidden");
+    return;
+  }
+  try {
+    await setupAdminPassword(pw);
+    document.getElementById("admin-setup").classList.add("hidden");
+    alert("Senha do Administrador definida neste aparelho. Você já pode entrar com o usuário admin.");
+  } catch (err) {
+    errorEl.textContent = err.message || "Não foi possível definir a senha.";
+    errorEl.classList.remove("hidden");
+  }
+});
 
 const form = document.getElementById("login-form");
 const error = document.getElementById("login-error");
@@ -42,12 +78,12 @@ const button = document.getElementById("login-button");
 
 document.getElementById("forgot-password").addEventListener("click", () => {
   const ok = confirm(
-    "Isso vai apagar os usuários criados NESTE APARELHO e voltar o acesso para o padrão de fábrica " +
-    "(tecnico/1234, admin/270889). Os dados de atividades, materiais e rascunhos não são afetados. Continuar?"
+    "Isso vai apagar os usuários criados NESTE APARELHO e voltar o acesso para o padrão de fábrica. " +
+    "Os dados de atividades, materiais e rascunhos não são afetados. Continuar?"
   );
   if (!ok) return;
   resetLocalAuthToDefault();
-  alert("Acesso deste aparelho resetado. Entre novamente com tecnico/1234 (ou admin/270889).");
+  alert("Acesso deste aparelho resetado. Entre novamente com o usuário técnico padrão.");
   location.reload();
 });
 
