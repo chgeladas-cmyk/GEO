@@ -21,17 +21,19 @@ export const defaultData = {
                 "1.41 ACOMP EQUIPE COELBA",
                 "8.11 LEVANT REDE GERAL",
                 "1.16 RETIRAR EQUIPAMENTOS MEC"
-            ],
+],
             services: [
-                "Lançamento de cordoalha", "Encabeçamento e retencionamento", "Espinamento da rede"
-            ],
+                "Lançamento de cordoalha",
+                "Encabeçamento e retencionamento",
+                "Espinamento da rede"
+],
             materials: [
                 "22055824- FITA INOX 3/4 X 0,5MM X 25M",
                 "22055836- FITA AUTOFUSAO 3M 23LB 19X10MM",
                 "22055839- FECHO DE ACO INOX DENTADO 3/4",
                 "22025593- SUPORTE P/ISOLADOR_RE VERT.",
                 "22025932- FIO ESPIN SAE1020 ISOL FEI-125",
-                "22025702- FITA ISOLANTE 3M 33+",
+                "22025072- FITA ISOLANTE 3M 33+",
                 "22056332- FITA AUTO-FUSAO 23LB 19X10MM 3M NET",
                 "22056335- FECHO DE ACO INOX DENTADO 3/4",
                 "30034275- PARAFUSO P/ABRAC BAP 2 E 3",
@@ -39,9 +41,9 @@ export const defaultData = {
                 "22025592- ISOLADOR_RE HORIZ. 12X817CM",
                 "22025669- HASTE ATER SAE1020 16MM 2,4M",
                 "22025704- CONECTOR ATERRAMENTO 16MM",
-                "22025810- CONJ.ISOLADOR ANCORAGEM",
+                "22025810- PLACA DE SINALIZAÇÃO",
                 "22025937- ISOLADOR PORCELANA 72 X 72",
-                "22025963- CONEC_RE P/HASTE 5/8"",
+                "22025963- CONEC_RE P/HASTE 5/8\"",
                 "ACRE1505- ELETRODUTO RIGIDO 1/2 X 3MT PT",
                 "30033093- CONEC_RE ADAPT.EQPT/EQPT",
                 "60000132- CABO COAXIAL RE P3 .750 S/M PT",
@@ -50,5 +52,5 @@ export const defaultData = {
                 "30034240- ABRAC AJUST BAP2",
                 "30034266- CORDOALHA ACO 7 FIOS",
                 "22025697- ESPACADOR CABO COAXIAL"
-            ]
+]
         };
