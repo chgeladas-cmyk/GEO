@@ -1,6 +1,6 @@
 import { defaultData } from "./default-data.js";
 
-export const DATA_VERSION = 5;
+export const DATA_VERSION = 6;
 
 function cloneDefaultData() {
   return structuredClone(defaultData);
@@ -35,11 +35,9 @@ export function migrateData(savedVersion, savedData) {
   hydrateDataStore(savedData);
 
   if (savedVersion < DATA_VERSION) {
-    const activities = [...defaultData.activities];
-    state.dataStore.activities.forEach(item => {
-      if (!activities.includes(item)) activities.push(item);
-    });
-    state.dataStore.activities = activities;
+    // Versão 6: substitui integralmente a lista antiga de atividades.
+    // Não preserva atividades antigas salvas no localStorage.
+    state.dataStore.activities = [...defaultData.activities];
 
     const materials = [...defaultData.materials];
     state.dataStore.materials.forEach(item => {

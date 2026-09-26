@@ -20,7 +20,7 @@ export const defaultData = {
                 "1.23 READQ DE ATERRAMENTO",
                 "1.41 ACOMP EQUIPE COELBA",
                 "8.11 LEVANT REDE GERAL",
-                "1.16 RETIRAR EQUIPAMENTOS MEC",
+                "1.16 RETIRAR EQUIPAMENTOS MEC"
             ],
             services: [
                 "Lançamento de cordoalha", "Encabeçamento e retencionamento", "Espinamento da rede"
