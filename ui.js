@@ -3,6 +3,10 @@ import { saveData } from "./storage.js";
 
 const toast = (msg) => window.GEO?.showToast?.(msg);
 
+function escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+}
+
 function renderList(type) {
             const containerId = {
                 'activity': 'atividades-list',
@@ -22,8 +26,8 @@ function renderList(type) {
                 
                 let innerHTML = `
                     <div class="flex items-center space-x-2">
-                        <input type="checkbox" id="${type}-${index}" class="${cssClass} w-5 h-5 cursor-pointer no-screenshot-check" data-name="${item}">
-                        <label for="${type}-${index}" class="text-sm text-gray-700 cursor-pointer select-none flex-1">${item}</label>
+                        <input type="checkbox" id="${type}-${index}" class="${cssClass} w-5 h-5 cursor-pointer no-screenshot-check" data-name="${escapeHtml(item)}">
+                        <label for="${type}-${index}" class="text-sm text-gray-700 cursor-pointer select-none flex-1">${escapeHtml(item)}</label>
                 `;
 
                 if (type === 'material') {
@@ -41,7 +45,7 @@ function renderList(type) {
                     const savedDetail = details[item] || '';
                     innerHTML += `
                         <div id="detail-wrap-activity-${index}" class="detail-wrap mt-1 ml-7 hidden">
-                            <input type="text" id="detail-activity-${index}" data-activity-name="${item}" placeholder="Detalhes/Medição (ex: 3 postes, 120m de cordoalha...)" class="w-full text-xs py-1 px-2 detail-input" value="${savedDetail}">
+                            <input type="text" id="detail-activity-${index}" data-activity-name="${escapeHtml(item)}" placeholder="Detalhes/Medição (ex: 3 postes, 120m de cordoalha...)" class="w-full text-xs py-1 px-2 detail-input" value="${escapeHtml(savedDetail)}">
                         </div>
                     `;
                 }

@@ -1,3 +1,5 @@
+import { state } from "./state.js";
+
 const toast = (msg) => window.GEO?.showToast?.(msg);
 
 export function copyToClipboard() {

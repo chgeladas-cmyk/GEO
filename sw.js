@@ -1,10 +1,12 @@
-const CACHE_VERSION = "geo-v9-auth";
+const CACHE_VERSION = "geo-v10-auth-fix";
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 
 const APP_SHELL = [
   "./",
   "./index.html",
+  "./login.html",
+  "./usuarios.html",
   "./app.css",
   "./default-data.js",
   "./app.js",
@@ -16,6 +18,9 @@ const APP_SHELL = [
   "./screenshot.js",
   "./excel.js",
   "./clipboard.js",
+  "./usuarios.js",
+  "./authLocalService.js",
+  "./auth-guard.js",
   "./manifest.webmanifest"
 ];
 
@@ -55,7 +60,7 @@ self.addEventListener("fetch", event => {
           caches.open(RUNTIME_CACHE).then(cache => cache.put(request, copy));
           return response;
         })
-        .catch(() => caches.match("./index.html"))
+        .catch(() => caches.match(request).then(cached => cached || caches.match("./index.html")))
     );
     return;
   }
