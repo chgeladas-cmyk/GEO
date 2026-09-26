@@ -28,6 +28,15 @@
 <tbody id="users-body"></tbody>
 </table>
 </section>
+
+<section class="card mt-5">
+  <div><span class="font-bold">Listas de Atividades e Materiais</span><p class="text-xs text-gray-500">Cada aparelho guarda sua própria lista. Exporte aqui e importe nos outros celulares da equipe para manter todos com os mesmos itens — sem precisar de internet.</p></div>
+  <div class="flex flex-wrap gap-2 mt-3">
+    <button id="export-listas" class="bg-blue-600 text-white px-4 py-2 rounded font-bold">⬇️ Exportar listas (.json)</button>
+    <button id="import-listas-btn" class="bg-gray-100 border px-4 py-2 rounded font-bold">⬆️ Importar listas (.json)</button>
+    <input type="file" id="import-listas-file" accept="application/json" class="hidden">
+  </div>
+</section>
 </main>
 
 <div id="modal" class="fixed inset-0 bg-black/60 hidden items-center justify-center p-4 z-50">
@@ -50,6 +59,8 @@
 <script type="module">
 import { initAuthUI } from "./auth-guard.js";
 import { getUsers, createUser, updateUser, setUserPassword, getProfilePermissions } from "./authLocalService.js";
+import { state } from "./state.js";
+import { saveData } from "./storage.js";
 
 const me = initAuthUI({ permission: "usuarios" });
 if (!me) throw new Error("Acesso negado");
@@ -117,6 +128,61 @@ document.addEventListener("click", e=>{
  if(edit){ const u=getUsers().find(x=>x.id===edit.dataset.id); if(u) openEdit(u); }
  if(reset){ const u=getUsers().find(x=>x.id===reset.dataset.id); if(!u) return; const p=prompt(`Nova senha para ${u.username}:`); if(p===null)return; setUserPassword(u.id,p).then(render).catch(err=>alert(err.message)); }
 });
+
+function exportarListas() {
+  const payload = {
+    tipo: "geo-listas",
+    versao: 1,
+    exportadoEm: new Date().toISOString(),
+    activities: state.dataStore.activities,
+    materials: state.dataStore.materials
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `geo-listas-${new Date().toISOString().slice(0,10)}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+async function importarListas(file) {
+  try {
+    const text = await file.text();
+    const data = JSON.parse(text);
+    if (!Array.isArray(data.activities) || !Array.isArray(data.materials)) {
+      throw new Error("Arquivo inválido: não é um export de listas do GEO.");
+    }
+    let novos = 0;
+    data.activities.forEach(item => {
+      if (typeof item === "string" && item.trim() && !state.dataStore.activities.includes(item)) {
+        state.dataStore.activities.push(item);
+        novos++;
+      }
+    });
+    data.materials.forEach(item => {
+      if (typeof item === "string" && item.trim() && !state.dataStore.materials.includes(item)) {
+        state.dataStore.materials.push(item);
+        novos++;
+      }
+    });
+    saveData();
+    alert(novos > 0 ? `Importação concluída: ${novos} novo(s) item(ns) adicionados.` : "Nenhum item novo — este aparelho já tinha tudo.");
+  } catch (err) {
+    alert("Não foi possível importar: " + (err.message || "arquivo inválido."));
+  }
+}
+
+$("export-listas").onclick = exportarListas;
+$("import-listas-btn").onclick = () => $("import-listas-file").click();
+$("import-listas-file").onchange = (e) => {
+  const file = e.target.files[0];
+  if (file) importarListas(file);
+  e.target.value = "";
+};
+
 render();
 </script>
 </body>

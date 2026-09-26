@@ -22,6 +22,7 @@
         <header class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4 no-screenshot">
             <div>
                     <p class="text-xs text-gray-500 mt-1">Usuário: <span id="auth-user-name" class="font-semibold"></span></p>
+                    <p class="text-xs mt-1"><span id="conn-status" class="font-semibold">●</span></p>
             </div>
             <h1 class="text-2xl font-bold text-blue-800">Carimbo Digital</h1>
             <div class="flex flex-wrap justify-center gap-2">
@@ -38,6 +39,7 @@
                     Excel
                 </button>
                 <a id="auth-users-link" href="./usuarios.html" class="hidden bg-amber-500 text-white px-3 py-2 rounded shadow font-bold text-sm">👥 Usuários</a>
+                <button data-action="new-rdo" class="bg-gray-600 text-white px-3 py-2 rounded shadow font-bold text-sm">🆕 Novo RDO</button>
                 <button data-action="logout" class="bg-red-600 text-white px-3 py-2 rounded shadow font-bold text-sm">Sair</button>
             </div>
         </header>
@@ -115,7 +117,7 @@
                 </h2>
                 <p class="text-xs text-gray-400 mb-2 no-screenshot">Toque em um campo (fica destacado em verde) e fale o valor — será preenchido em LETRAS MAIÚSCULAS. Sem campo selecionado, diga o código da atividade (ex: "dois ponto treze") ou o nome.</p>
                 <div id="atividades-list" class="grid grid-cols-1 gap-2"></div>
-                <div class="mt-4 flex gap-2 no-screenshot">
+                <div class="mt-4 flex gap-2 no-screenshot" data-permission="configuracoes">
                     <input type="text" id="new-activity" placeholder="Nova atividade..." class="flex-1">
                     <button data-action="add-item" data-type="activity" class="bg-blue-50 text-blue-700 font-bold px-3 py-1 rounded border border-blue-200 hover:bg-blue-100 transition">Add</button>
                 </div>
@@ -130,7 +132,7 @@
                     </button>
                 </h2>
                 <div id="materiais-list" class="space-y-2 mb-3"></div>
-                <div class="mt-4 flex gap-2 no-screenshot">
+                <div class="mt-4 flex gap-2 no-screenshot" data-permission="configuracoes">
                     <input type="text" id="new-material" placeholder="Novo material..." class="flex-1">
                     <button data-action="add-item" data-type="material" class="bg-red-50 text-red-700 font-bold px-3 py-1 rounded border border-red-200 hover:bg-red-100 transition">Add</button>
                 </div>

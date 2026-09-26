@@ -1,4 +1,5 @@
 import { state } from "./state.js";
+import { validarAntesDeExportar } from "./validation.js";
 
 const toast = (msg) => window.GEO?.showToast?.(msg);
 
@@ -53,6 +54,7 @@ function copyWithExecCommand(text) {
 }
 
 export async function copyToClipboard() {
+            if (!validarAntesDeExportar()) return;
             const text = buildText();
 
             if (navigator.clipboard?.writeText && window.isSecureContext) {

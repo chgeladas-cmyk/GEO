@@ -1,6 +1,9 @@
+import { validarAntesDeExportar } from "./validation.js";
+
 const toast = (msg) => window.GEO?.showToast?.(msg);
 
 export async function takeScreenshot() {
+            if (!validarAntesDeExportar()) return;
             const element = document.getElementById('capture-area');
             const btnsToHide = document.querySelectorAll('.no-screenshot');
             

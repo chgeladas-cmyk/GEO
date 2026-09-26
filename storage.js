@@ -3,7 +3,8 @@ import { state, migrateData, DATA_VERSION } from "./state.js";
 const KEYS = Object.freeze({
   data: "carimbo_data_store",
   version: "carimbo_data_version",
-  tecnicos: "tecnicos_padrao"
+  tecnicos: "tecnicos_padrao",
+  draft: "carimbo_rascunho_v1"
 });
 
 function readJSON(key, fallback = null) {
@@ -77,6 +78,24 @@ export function initStorage() {
   setDataVersion(DATA_VERSION);
   if (!saveData()) {
     console.warn("[GEO] Os dados estão disponíveis apenas em memória nesta sessão.");
+  }
+}
+
+export function getDraft() {
+  return readJSON(KEYS.draft, null);
+}
+
+export function saveDraft(draft) {
+  return writeJSON(KEYS.draft, draft);
+}
+
+export function clearDraft() {
+  try {
+    localStorage.removeItem(KEYS.draft);
+    return true;
+  } catch (error) {
+    console.warn(`[GEO] Falha ao limpar rascunho:`, error);
+    return false;
   }
 }
 

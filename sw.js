@@ -1,4 +1,4 @@
-const CACHE_VERSION = "geo-v10-auth-fix";
+const CACHE_VERSION = "geo-v11-usabilidade";
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 
@@ -21,6 +21,9 @@ const APP_SHELL = [
   "./usuarios.js",
   "./authLocalService.js",
   "./auth-guard.js",
+  "./connection.js",
+  "./validation.js",
+  "./draft.js",
   "./manifest.webmanifest"
 ];
 

@@ -1,7 +1,9 @@
 import { state } from "./state.js";
+import { validarAntesDeExportar } from "./validation.js";
 const toast = (msg) => window.GEO?.showToast?.(msg);
 
 export async function exportAndShareExcel() {
+            if (!validarAntesDeExportar()) return;
             const getValue = (id) => document.getElementById(id).value || '---';
             const baseInfo = [
                 ["CARIMBO DIGITAL"],

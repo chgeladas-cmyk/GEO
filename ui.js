@@ -1,5 +1,6 @@
 import { state } from "./state.js";
 import { saveData } from "./storage.js";
+import { hasPermission } from "./authLocalService.js";
 
 const toast = (msg) => window.GEO?.showToast?.(msg);
 
@@ -80,13 +81,17 @@ function renderList(type) {
                         if (state.activeField) state.activeField.classList.remove('voice-target');
                         state.activeField = detailInput;
                         detailInput.classList.add('voice-target');
-                        showToast(`🎯 Detalhes: ${item.length > 30 ? item.slice(0,30)+'…' : item}`);
+                        toast(`🎯 Detalhes: ${item.length > 30 ? item.slice(0,30)+'…' : item}`);
                     });
                 }
             });
         }
 
         function addItem(type) {
+            if (!hasPermission("configuracoes")) {
+                toast("Apenas administradores podem adicionar novos itens.");
+                return;
+            }
             const input = document.getElementById(`new-${type}`);
             const val = input.value.trim();
             if (val) {
@@ -96,13 +101,15 @@ function renderList(type) {
                     saveData();
                     input.value = '';
                     renderList(type);
-                    showToast("Adicionado!");
+                    toast("Adicionado!");
                 }
             }
         }
 
         function removeItem(type, index) {
             const key = type === 'activity' ? 'activities' : type === 'service' ? 'services' : 'materials';
+            const nome = state.dataStore[key][index];
+            if (!confirm(`Excluir "${nome}" da lista? Essa ação não pode ser desfeita.`)) return;
             state.dataStore[key].splice(index, 1);
             saveData();
             renderList(type);
@@ -206,7 +213,7 @@ function renderList(type) {
                 state.dataStore.materials.push(mat);
                 saveData();
                 renderList('material');
-                showToast('Material adicionado!');
+                toast('Material adicionado!');
             }
         }
 
@@ -226,9 +233,9 @@ function renderList(type) {
                 btn.textContent = '✓';
                 btn.classList.replace('bg-red-50', 'bg-green-100');
                 btn.classList.replace('text-red-700', 'text-green-700');
-                showToast('Marcado: ' + mat.replace(/^\S+- /, '').substring(0, 30));
+                toast('Marcado: ' + mat.replace(/^\S+- /, '').substring(0, 30));
             } else {
-                showToast('Material não encontrado na lista principal');
+                toast('Material não encontrado na lista principal');
             }
         }
 

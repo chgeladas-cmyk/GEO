@@ -7,6 +7,8 @@ import { takeScreenshot, closeScreenshot } from "./screenshot.js";
 import { exportAndShareExcel } from "./excel.js";
 import { copyToClipboard } from "./clipboard.js";
 import { initAuthUI } from "./auth-guard.js";
+import { setupConnectionIndicator } from "./connection.js";
+import { restoreDraftToForm, setupDraftAutosave, startNewRdo } from "./draft.js";
 
 window.GEO = window.GEO || {};
 
@@ -45,6 +47,7 @@ function bindStaticEvents() {
             const cb = document.getElementById(target.dataset.target);
             if (cb) cb.checked = true;
         }
+        else if (action === "new-rdo") startNewRdo();
     });
 
     document.addEventListener("input", (event) => {
@@ -64,6 +67,7 @@ function init() {
     const user = initAuthUI({ permission: "atividades" });
     if (!user) return;
     initStorage();
+    setupConnectionIndicator();
     const tecInput = document.getElementById("field-tecnicos");
     if (tecInput) tecInput.value = getTecnicosPadrao();
     const dateInput = document.getElementById("current-date");
@@ -71,6 +75,8 @@ function init() {
     bindStaticEvents();
     renderList("activity");
     renderList("material");
+    restoreDraftToForm();
+    setupDraftAutosave();
     setupActiveFieldTracking();
 }
 
