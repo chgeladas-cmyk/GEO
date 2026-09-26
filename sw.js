@@ -1,4 +1,4 @@
-const CACHE_VERSION = "geo-v5-1";
+const CACHE_VERSION = "geo-v6-1";
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 
