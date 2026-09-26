@@ -6,6 +6,7 @@ import { renderList, addItem, removeItem, openMaisUsados, closeMaisUsados, filtr
 import { takeScreenshot, closeScreenshot } from "./screenshot.js";
 import { exportAndShareExcel } from "./excel.js";
 import { copyToClipboard } from "./clipboard.js";
+import { initAuthUI } from "./auth-guard.js";
 
 window.GEO = window.GEO || {};
 
@@ -60,6 +61,8 @@ function bindStaticEvents() {
 }
 
 function init() {
+    const user = initAuthUI({ permission: "atividades" });
+    if (!user) return;
     initStorage();
     const tecInput = document.getElementById("field-tecnicos");
     if (tecInput) tecInput.value = getTecnicosPadrao();

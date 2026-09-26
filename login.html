@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GEO — Acesso</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="./app.css">
+</head>
+<body class="bg-gray-50 min-h-screen flex items-center justify-center p-4">
+<main class="w-full max-w-md">
+  <section class="card shadow-lg">
+    <div class="text-center mb-6">
+      <div class="text-4xl mb-2">🔐</div>
+      <h1 class="text-2xl font-bold text-blue-800">GEO</h1>
+      <p class="text-sm text-gray-500">Acesso ao Carimbo Digital</p>
+    </div>
+    <form id="login-form" class="space-y-4">
+      <div>
+        <label class="block text-sm font-semibold text-gray-600">USUÁRIO</label>
+        <input id="username" type="text" autocomplete="username" required class="w-full">
+      </div>
+      <div>
+        <label class="block text-sm font-semibold text-gray-600">SENHA / PIN</label>
+        <input id="password" type="password" autocomplete="current-password" minlength="4" required class="w-full">
+      </div>
+      <button id="login-button" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700">ENTRAR</button>
+      <p id="login-error" class="hidden text-sm text-red-600 bg-red-50 border border-red-200 rounded p-3"></p>
+    </form>
+    <p class="text-xs text-gray-400 text-center mt-6">Acesso local neste dispositivo.</p>
+  </section>
+</main>
+<script type="module">
+import { authenticate, getCurrentUser } from "./authLocalService.js";
+if (getCurrentUser()) location.replace("./index.html");
+
+const form = document.getElementById("login-form");
+const error = document.getElementById("login-error");
+const button = document.getElementById("login-button");
+
+form.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  error.classList.add("hidden");
+  button.disabled = true;
+  button.textContent = "ENTRANDO...";
+  try {
+    const result = await authenticate(
+      document.getElementById("username").value,
+      document.getElementById("password").value
+    );
+    if (result.ok) location.replace("./index.html");
+    else {
+      error.textContent = result.reason;
+      error.classList.remove("hidden");
+    }
+  } catch (err) {
+    error.textContent = "Não foi possível realizar o acesso.";
+    error.classList.remove("hidden");
+    console.error(err);
+  } finally {
+    button.disabled = false;
+    button.textContent = "ENTRAR";
+  }
+});
+</script>
+</body>
+</html>
