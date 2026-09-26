@@ -334,4 +334,14 @@ export async function setOwnPassword(password) {
     return users[index];
 }
 
+// Reseta a autenticação DESTE APARELHO para os usuários padrão de fábrica
+// (para quando não há ninguém com ADMIN local disponível para resetar a senha).
+// Não mexe nos dados de atividades/materiais/rascunho — só no login.
+export function resetLocalAuthToDefault() {
+    localStorage.removeItem(STORAGE_USERS);
+    localStorage.removeItem(STORAGE_SESSION);
+    localStorage.removeItem(STORAGE_VERSION);
+    ensureInitialized();
+}
+
 export { getUsers, hashPassword, PROFILE_PERMISSIONS };

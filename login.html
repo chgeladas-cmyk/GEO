@@ -28,16 +28,28 @@
       <p id="login-error" class="hidden text-sm text-red-600 bg-red-50 border border-red-200 rounded p-3"></p>
     </form>
     <p class="text-xs text-gray-400 text-center mt-6">Acesso local neste dispositivo.</p>
+    <p class="text-center mt-2"><button id="forgot-password" type="button" class="text-xs text-blue-600 underline">Esqueci minha senha</button></p>
   </section>
 </main>
 <script src="./usuarios.js"></script>
 <script type="module">
-import { authenticate, getCurrentUser } from "./authLocalService.js";
+import { authenticate, getCurrentUser, resetLocalAuthToDefault } from "./authLocalService.js";
 if (getCurrentUser()) location.replace("./index.html");
 
 const form = document.getElementById("login-form");
 const error = document.getElementById("login-error");
 const button = document.getElementById("login-button");
+
+document.getElementById("forgot-password").addEventListener("click", () => {
+  const ok = confirm(
+    "Isso vai apagar os usuários criados NESTE APARELHO e voltar o acesso para o padrão de fábrica " +
+    "(tecnico/1234, admin/270889). Os dados de atividades, materiais e rascunhos não são afetados. Continuar?"
+  );
+  if (!ok) return;
+  resetLocalAuthToDefault();
+  alert("Acesso deste aparelho resetado. Entre novamente com tecnico/1234 (ou admin/270889).");
+  location.reload();
+});
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
