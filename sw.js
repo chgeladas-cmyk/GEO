@@ -1,4 +1,4 @@
-const CACHE_VERSION = "geo-v11-usabilidade";
+const CACHE_VERSION = "geo-v12-usuarios-padrao";
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 
