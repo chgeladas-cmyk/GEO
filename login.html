@@ -30,6 +30,7 @@
     <p class="text-xs text-gray-400 text-center mt-6">Acesso local neste dispositivo.</p>
   </section>
 </main>
+<script src="./usuarios.js"></script>
 <script type="module">
 import { authenticate, getCurrentUser } from "./authLocalService.js";
 if (getCurrentUser()) location.replace("./index.html");

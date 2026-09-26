@@ -1,7 +1,7 @@
 const STORAGE_USERS = "geo_auth_users_v1";
 const STORAGE_SESSION = "geo_auth_session_v1";
 const STORAGE_VERSION = "geo_auth_version_v1";
-const VERSION = 1;
+const VERSION = 2; // v2: corrige carregamento de usuarios.js (usuário admin não existia) e nova senha padrão
 
 const PROFILE_PERMISSIONS = Object.freeze({
     ADMIN: ["atividades","materiais","ordens","relatorios","usuarios","configuracoes"],
