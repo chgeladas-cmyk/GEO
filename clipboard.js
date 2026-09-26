@@ -2,7 +2,7 @@ import { state } from "./state.js";
 
 const toast = (msg) => window.GEO?.showToast?.(msg);
 
-export function copyToClipboard() {
+function buildText() {
             const getValue = (id) => document.getElementById(id).value || '---';
             const selectedActs = Array.from(document.querySelectorAll('.activity-checkbox:checked')).map(cb => {
                 const name = cb.getAttribute('data-name');
@@ -19,7 +19,7 @@ export function copyToClipboard() {
             text += `*RDO:* ${getValue('field-id')} | *DATA:* ${getValue('current-date')}\n`;
             text += `*EQUIPE:* ${getValue('field-equipe')}\n*TÉCNICOS:* ${getValue('field-tecnicos')}\n\n`;
             text += `📍 *LOCALIZAÇÃO*\n*End:* ${getValue('field-endereco')}\n*Bairro:* ${getValue('field-bairro')}\n*Cidade:* ${getValue('field-cidade-uf')}\n\n`;
-            
+
             if(selectedActs.length > 0) text += `🛠 *ATIVIDADES:*\n${selectedActs.join('\n')}\n\n`;
 
             text += `*TASK:* ${getValue('field-task')}\n`;
@@ -27,13 +27,49 @@ export function copyToClipboard() {
 
             if(selectedMats.length > 0) text += `📦 *MATERIAIS:*\n${selectedMats.join('\n')}`;
 
+            return text;
+}
+
+function copyWithExecCommand(text) {
             const temp = document.createElement('textarea');
             temp.value = text;
+            temp.setAttribute('readonly', '');
+            temp.style.position = 'fixed';
+            temp.style.top = '0';
+            temp.style.left = '0';
+            temp.style.opacity = '0';
             document.body.appendChild(temp);
+            temp.focus();
             temp.select();
-            document.execCommand('copy');
+            temp.setSelectionRange(0, text.length); // necessário no Safari/iOS
+            let ok = false;
+            try {
+                ok = document.execCommand('copy');
+            } catch {
+                ok = false;
+            }
             document.body.removeChild(temp);
-            toast("Copiado para o WhatsApp!");
-        }
+            return ok;
+}
+
+export async function copyToClipboard() {
+            const text = buildText();
+
+            if (navigator.clipboard?.writeText && window.isSecureContext) {
+                try {
+                    await navigator.clipboard.writeText(text);
+                    toast("Copiado para o WhatsApp!");
+                    return;
+                } catch {
+                    // Se a API moderna falhar (ex: sem permissão), tenta o método alternativo abaixo.
+                }
+            }
+
+            if (copyWithExecCommand(text)) {
+                toast("Copiado para o WhatsApp!");
+            } else {
+                toast("Não foi possível copiar automaticamente. Copie manualmente.");
+            }
+}
 
         
