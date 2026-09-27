@@ -42,12 +42,12 @@ const button = document.getElementById("login-button");
 
 document.getElementById("forgot-password").addEventListener("click", () => {
   const ok = confirm(
-    "Isso vai apagar os usuários criados NESTE APARELHO e voltar o acesso para o padrão de fábrica " +
-    "(tecnico/1234, admin/270889). Os dados de atividades, materiais e rascunhos não são afetados. Continuar?"
+    "Isso vai apagar os usuários criados NESTE APARELHO e voltar o acesso para o padrão de fábrica. " +
+    "Os dados de atividades, materiais e rascunhos não são afetados. Continuar?"
   );
   if (!ok) return;
   resetLocalAuthToDefault();
-  alert("Acesso deste aparelho resetado. Entre novamente com tecnico/1234 (ou admin/270889).");
+  alert("Acesso deste aparelho resetado. Use uma conta autorizada para entrar novamente.");
   location.reload();
 });
 
