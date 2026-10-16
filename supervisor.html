@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supervisor — Book O.S.</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <link rel="stylesheet" href="./app.css">
+    <style>
+        .sup-table { min-width: 1250px; font-size: 12px; }
+        .sup-table th { text-align: left; font-size: 10px; text-transform: uppercase; color: #475569; padding: 2px 4px; }
+        .sup-table td { padding: 2px 3px; vertical-align: middle; }
+        .sup-table input, .sup-table select { padding: 0.3rem; font-size: 12px; }
+        .mat-table { min-width: 760px; font-size: 12px; }
+        .mat-table th { text-align: left; font-size: 10px; text-transform: uppercase; color: #475569; padding: 2px 4px; }
+        .mat-table td { padding: 2px 3px; }
+        .mat-table input { padding: 0.3rem; font-size: 12px; }
+        .pill { display:inline-block; padding:2px 8px; border-radius:9999px; font-size:11px; font-weight:700; }
+        #book-print { display: none; }
+        @media print {
+            body > *:not(#book-print) { display: none !important; }
+            #book-print { display: block !important; font: 10.5px Arial, sans-serif; color: #000; }
+            #book-print h1 { font-size: 16px; text-align: center; margin: 0; }
+            #book-print .sub { text-align: center; margin: 2px 0 8px; }
+            #book-print h2 { font-size: 12px; background: #e2e8f0; padding: 3px 6px; margin: 10px 0 4px; break-after: avoid; }
+            #book-print .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px 8px; }
+            #book-print .c { border-bottom: 1px solid #cbd5e1; padding: 2px 0; }
+            #book-print .c b { display: block; font-size: 8.5px; text-transform: uppercase; color: #475569; }
+            #book-print table { width: 100%; border-collapse: collapse; }
+            #book-print th, #book-print td { border: 1px solid #94a3b8; padding: 2px 3px; font-size: 9px; text-align: left; }
+            #book-print tr { break-inside: avoid; }
+            #book-print pre { white-space: pre-wrap; font: inherit; }
+            #book-print .alerta { border: 1px solid #f59e0b; background: #fffbeb; padding: 4px 8px; margin: 6px 0; }
+            #book-print .total { font-size: 15px; font-weight: 700; }
+            @page { size: A4 landscape; margin: 10mm; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen p-3 md:p-6">
+    <div id="toast">Operação realizada!</div>
+    <div class="max-w-6xl mx-auto">
+        <header class="flex flex-wrap justify-between items-center mb-4 gap-2">
+            <div>
+                <h1 class="text-xl font-bold text-blue-800">Supervisor — Book / Conclusão da O.S.</h1>
+                <p class="text-xs text-gray-500 mt-1">Usuário: <span id="auth-user-name" class="font-semibold"></span></p>
+            </div>
+            <div class="flex gap-2">
+                <a href="./index.html" class="bg-gray-600 text-white px-3 py-2 rounded shadow font-bold text-sm">← Carimbo</a>
+                <button data-action="logout" class="bg-red-600 text-white px-3 py-2 rounded shadow font-bold text-sm">Sair</button>
+            </div>
+        </header>
+
+        <div class="card">
+            <label class="block text-sm font-semibold text-gray-600 mb-1">O.S. registradas neste aparelho</label>
+            <select id="os-select"></select>
+            <div class="flex flex-wrap gap-2 mt-3">
+                <button data-act="new-rdo" class="bg-blue-600 text-white px-3 py-2 rounded text-sm font-bold">➕ Nova O.S. a partir do RDO atual</button>
+                <button data-act="new-blank" class="bg-blue-50 text-blue-700 border border-blue-200 px-3 py-2 rounded text-sm font-bold">➕ O.S. em branco</button>
+                <button data-act="del-os" class="bg-red-50 text-red-700 border border-red-200 px-3 py-2 rounded text-sm font-bold">🗑 Excluir O.S.</button>
+            </div>
+            <p class="text-xs text-gray-400 mt-2">Os dados ficam gravados neste aparelho (localStorage). Não há sincronização com outros dispositivos.</p>
+        </div>
+
+        <div id="os-root"></div>
+    </div>
+
+    <div id="book-print"></div>
+
+    <script src="./usuarios.js"></script>
+    <script type="module" src="./supervisor.js"></script>
+</body>
+</html>

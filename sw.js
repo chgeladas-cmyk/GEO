@@ -1,4 +1,4 @@
-const CACHE_VERSION = "geo-v15-esqueci-senha";
+const CACHE_VERSION = "geo-v16-supervisor-book";
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 
@@ -24,6 +24,13 @@ const APP_SHELL = [
   "./connection.js",
   "./validation.js",
   "./draft.js",
+  "./supervisor.html",
+  "./supervisor.js",
+  "./supervisorService.js",
+  "./supervisorValidationService.js",
+  "./bookService.js",
+  "./bookExportService.js",
+  "./BOOK_SUPERVISOR_CH_TELECOM.xlsx",
   "./manifest.webmanifest"
 ];
 
